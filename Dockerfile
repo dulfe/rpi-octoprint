@@ -1,9 +1,14 @@
 FROM armhf/python:2.7-slim
 
-ENV OCTOPRINT_VERSION=1.3.1
 ENV CURA_ENGINE_VERSION=15.04.6
 
 RUN set -xe \
+	&& echo "Installing Core Dependencies" \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends curl jq \
+	&& echo "Getting latest version number" \
+	&& OP_VERSION=$(curl -s https://api.github.com/repos/foosel/OctoPrint/releases/latest | jq '.tag_name' -r) \	
+	&& export OCTOPRINT_VERSION=$OP_VERSION \
 	&& echo "Setup Temporary packages for compilation" \
 	&& export PKGS='build-essential subversion libjpeg-dev zlib1g-dev libv4l-dev wget unzip git' \
 	&& echo "Installing Dependencies" \
